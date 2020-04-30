@@ -6,6 +6,12 @@ but for releases!
 
 `gover` also verifies PGP signatures for downloaded release tarballs.
 
+## Install
+```
+go get suah.dev/gover
+```
+
+## Example run
 ```
 qbit@litr /t/hello_go> gover download 1.13.9
 Fetching "https://dl.google.com/go/go1.13.9.src.tar.gz"
