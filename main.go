@@ -29,6 +29,7 @@ import (
 	"strings"
 
 	"golang.org/x/crypto/openpgp"
+	"suah.dev/protect"
 )
 
 // Google Inc. (Linux Packages Signing Authority) <linux-packages-keymaster@google.com>
@@ -314,11 +315,15 @@ func main() {
 		log.Fatalf("gover: %v", err)
 	}
 
-	pledge("stdio tty unveil rpath cpath wpath proc dns inet fattr exec")
+	if err := os.MkdirAll(root, 0755); err != nil {
+		log.Fatalf("failed to create gover directory: %v\n", err)
+	}
 
-	unveil("/etc", "r")
-	unveil(root, "rwxc")
-	unveilBlock()
+	_ = protect.Pledge("stdio tty unveil rpath cpath wpath proc dns inet fattr exec")
+
+	_ = protect.Unveil("/etc", "r")
+	_ = protect.Unveil(root, "rwxc")
+	_ = protect.UnveilBlock()
 
 	if os.Args[1] == "download" {
 		switch len(os.Args) {
