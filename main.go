@@ -325,6 +325,11 @@ func main() {
 	_ = protect.Unveil(root, "rwxc")
 	_ = protect.UnveilBlock()
 
+	if len(os.Args) == 1 {
+		log.Fatalf("gover: usage: gover [download|version]")
+		os.Exit(1)
+	}
+
 	if os.Args[1] == "download" {
 		switch len(os.Args) {
 		case 3:
