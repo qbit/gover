@@ -15,9 +15,9 @@ package main
 
 import (
 	"bytes"
+	_ "embed"
 	"errors"
 	"fmt"
-	_ "embed"
 	"io"
 	"log"
 	"net/http"
@@ -59,7 +59,7 @@ func main() {
 	_ = protect.UnveilBlock()
 
 	if len(os.Args) == 1 {
-		log.Fatalf("gover: usage: gover [download|version]")
+		log.Fatalf("gover: usage: gover [download|version|list]")
 		os.Exit(1)
 	}
 
@@ -74,6 +74,17 @@ func main() {
 			log.Fatalf("gover: usage: gover download [version]")
 		}
 		log.Printf("Success. You may now run 'gover %s'!", version)
+		os.Exit(0)
+	}
+
+	if os.Args[1] == "list" {
+		entries, err := os.ReadDir(root)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		for _, entry := range entries {
+			fmt.Println(entry.Name())
+		}
 		os.Exit(0)
 	}
 	version = os.Args[1]
