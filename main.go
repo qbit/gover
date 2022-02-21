@@ -5,8 +5,12 @@
 //
 // To install, run:
 //
-//     $ go get suah.dev/gover
+//     $ go install suah.dev/gover@latest
 //     $ gover download 1.14.2
+//     $ alias go='gover 1.14.2'
+//     $ go version
+//     $ go version go1.14.2 openbsd/amd64
+//     $
 //
 // And then use the gover command as if it were your normal go command.
 //
@@ -29,7 +33,8 @@ import (
 	"runtime"
 	"strings"
 
-	"golang.org/x/crypto/openpgp"
+	"github.com/ProtonMail/go-crypto/openpgp"
+	"github.com/ProtonMail/go-crypto/openpgp/packet"
 	"suah.dev/protect"
 )
 
@@ -137,6 +142,7 @@ func fetch(a, b string) (*os.File, error) {
 	return f, nil
 }
 func fetchify(goURL string, fp string) error {
+	var pkt *packet.Config
 	buf := bytes.NewBufferString(pubKey)
 	kr, err := openpgp.ReadArmoredKeyRing(buf)
 	if err != nil {
@@ -155,7 +161,7 @@ func fetchify(goURL string, fp string) error {
 	defer tbz.Close()
 	defer sig.Close()
 
-	_, err = openpgp.CheckArmoredDetachedSignature(kr, tbz, sig)
+	_, err = openpgp.CheckArmoredDetachedSignature(kr, tbz, sig, pkt)
 	if err != nil {
 		return err
 	}
