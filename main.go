@@ -5,8 +5,8 @@
 //
 // To install, run:
 //
-//     $ go get suah.dev/gover
-//     $ gover download 1.14.2
+//	$ go get suah.dev/gover
+//	$ gover download 1.14.2
 //
 // And then use the gover command as if it were your normal go command.
 //
@@ -37,6 +37,7 @@ import (
 // RSA key 0x78BD65473CB3BD13
 // Primary key fingerprint: EB4C 1BFD 4F04 2F6D DDCC  EC91 7721 F63B D38B 4796
 // Subkey fingerprint:      2F52 8D36 D67B 69ED F998  D857 78BD 6547 3CB3 BD13
+//
 //go:embed google.pub
 var pubKey string
 
@@ -91,7 +92,13 @@ func main() {
 	gobin := filepath.Join(root, version, "go", "bin", "go"+exe())
 	gorootPath := filepath.Join(root, version, "go")
 	if _, err := os.Stat(gobin); err != nil {
-		log.Fatalf("gover: not downloaded. Run 'gover download' to install to %v", root)
+		if g := os.Getenv("GOVER_FETCH_MISSING"); g == "Yes" {
+			if err := installVer(root, version); err != nil {
+				log.Fatalf("gover: %v", err)
+			}
+		} else {
+			log.Fatalf("gover: not downloaded. Run 'gover download' to install to %v", root)
+		}
 	}
 	cmd := exec.Command(gobin, os.Args[2:]...)
 	cmd.Stdin = os.Stdin
