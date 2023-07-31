@@ -18,7 +18,7 @@
     in {
       gover = pkgs.buildGoModule {
         pname = "gover";
-        version = "v0.0.0";
+        version = "v1.0.8";
         src = ./.;
 
         vendorHash = "sha256-T1LtItKF1G161aoDG2EPOk47OOLhjtaWBAB1y+8r4sQ=";
