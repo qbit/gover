@@ -82,6 +82,17 @@ func main() {
 			if err := installVer(root, version); err != nil {
 				log.Fatalf("gover: %v", err)
 			}
+			// Create a symlink from "latest" to the installed version if we
+			// were invoked with "latest"
+			if os.Args[2] == "latest" {
+				log.Println("Creating a symlink", filepath.Join(root, "latest"), "to", version)
+				// Ignore errors deleting the existing symlink; if there really
+				// is a problem, os.Symlink will error about it too.
+				_ = os.Remove(filepath.Join(root, "latest"))
+				if err := os.Symlink(version, filepath.Join(root, "latest")); err != nil {
+					log.Fatalln(err)
+				}
+			}
 		default:
 			log.Fatalf("gover: usage: gover download [version]")
 		}
