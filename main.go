@@ -106,7 +106,20 @@ func main() {
 			log.Fatalln(err)
 		}
 		for _, entry := range entries {
-			fmt.Println(entry.Name())
+			finfo, err := entry.Info()
+			if err != nil {
+				log.Fatalln(err)
+			}
+			// Dereference the "latest" symlink to the installed version
+			if entry.Name() == "latest" && finfo.Mode()&os.ModeSymlink != 0 {
+				tgt, err := os.Readlink(filepath.Join(root, entry.Name()))
+				if err != nil {
+					log.Fatalln(err)
+				}
+				fmt.Println(entry.Name(), "->", tgt)
+			} else {
+				fmt.Println(entry.Name())
+			}
 		}
 		os.Exit(0)
 	}
