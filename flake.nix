@@ -1,7 +1,7 @@
 {
   description = "gover: a tool for managing versions of Go";
 
-  inputs.nixpkgs.url = "nixpkgs";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs";
 
   outputs = {
     self,
