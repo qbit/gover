@@ -11,11 +11,13 @@
 // And then use the gover command as if it were your normal go command.
 //
 // To download a specific version, run "gover download VERSION".
+// To download the latest version, run "gover download latest".
 package main
 
 import (
 	"bytes"
 	_ "embed"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -68,6 +70,15 @@ func main() {
 		switch len(os.Args) {
 		case 3:
 			version = os.Args[2]
+			if version == "latest" {
+				if version, err = getLatestGoVersion(); err != nil {
+					log.Fatalf("gover: %v", err)
+				}
+				// Trim the leading "go" from the version number so it matches
+				// our expected format of X.Y.Z
+				version = strings.TrimPrefix(version, "go")
+				log.Printf("Latest Go version is %v", version)
+			}
 			if err := installVer(root, version); err != nil {
 				log.Fatalf("gover: %v", err)
 			}
@@ -117,6 +128,30 @@ func main() {
 		log.Fatalf("gover: failed to execute %v: %v", gobin, err)
 	}
 	os.Exit(0)
+}
+
+// Copied from https://go.googlesource.com/tools/+/master/cmd/getgo/download.go
+func getLatestGoVersion() (string, error) {
+	resp, err := http.Get("https://golang.org/dl/?mode=json")
+	if err != nil {
+		return "", fmt.Errorf("Getting current Go version failed: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		b, _ := io.ReadAll(io.LimitReader(resp.Body, 1024))
+		return "", fmt.Errorf("Could not get current Go release: HTTP %d: %q", resp.StatusCode, b)
+	}
+	var releases []struct {
+		Version string
+	}
+	err = json.NewDecoder(resp.Body).Decode(&releases)
+	if err != nil {
+		return "", err
+	}
+	if len(releases) < 1 {
+		return "", fmt.Errorf("Could not get at least one Go release")
+	}
+	return releases[0].Version, nil
 }
 func fetch(a, b string) (*os.File, error) {
 	fmt.Printf("Fetching %q\n", a)

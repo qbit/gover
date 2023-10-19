@@ -36,3 +36,5 @@ qbit@litr /t/hello_go> goversion ./hello_go
 ./hello_go go1.14.2
 qbit@litr /t/hello_go> 
 ```
+
+The latest Go release can be downloaded by using `gover download latest`.
