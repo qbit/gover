@@ -156,7 +156,7 @@ func main() {
 
 // Copied from https://go.googlesource.com/tools/+/master/cmd/getgo/download.go
 func getLatestGoVersion() (string, error) {
-	resp, err := http.Get("https://golang.org/dl/?mode=json")
+	resp, err := http.Get("https://go.dev/dl/?mode=json")
 	if err != nil {
 		return "", fmt.Errorf("Getting current Go version failed: %v", err)
 	}
