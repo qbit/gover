@@ -40,6 +40,16 @@ import (
 // Primary key fingerprint: EB4C 1BFD 4F04 2F6D DDCC  EC91 7721 F63B D38B 4796
 // Subkey fingerprint:      2F52 8D36 D67B 69ED F998  D857 78BD 6547 3CB3 BD13
 //
+// Download key: https://www.google.com/linuxrepositories/
+// Direct link: https://dl.google.com/linux/linux_signing_key.pub
+// Import into gpg:
+//
+//	gpg --import google.pub
+//	gpg --import linux_signing_key.pub
+//	gpg --export --armor linux-packages-keymaster@google.com > google.pub
+//
+// ^ this is needed because they seem to publish a partial key..
+//
 //go:embed google.pub
 var pubKey string
 
