@@ -29,6 +29,7 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 
 	"golang.org/x/crypto/openpgp"
@@ -74,6 +75,29 @@ func main() {
 	if len(os.Args) == 1 {
 		log.Fatalf("gover: usage: gover [download|version|list]")
 		os.Exit(1)
+	}
+
+	if os.Args[1] == "env" {
+		if len(os.Args) != 3 {
+			log.Fatalf("gover: usage: gover download [version]")
+		}
+		version = os.Args[2]
+		if version == "latest" {
+			if version, err = getLatestGoVersion(); err != nil {
+				log.Fatalf("gover: %v", err)
+			}
+			version = strings.TrimPrefix(version, "go")
+		}
+		gr := filepath.Join(root, version, "go")
+		fmt.Printf("GOROOT=%s\n", gr)
+
+		origPath := strings.Split(os.Getenv("PATH"), ":")
+		origPath = slices.DeleteFunc(origPath, func(s string) bool {
+			return strings.Contains(s, root)
+		})
+
+		fmt.Printf("PATH=%s:%s\n", filepath.Join(gr, "bin"), strings.Join(origPath, ":"))
+		os.Exit(0)
 	}
 
 	if os.Args[1] == "download" {
