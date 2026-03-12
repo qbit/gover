@@ -29,7 +29,6 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
-	"slices"
 	"strings"
 
 	"golang.org/x/crypto/openpgp"
@@ -92,9 +91,13 @@ func main() {
 		fmt.Printf("GOROOT=%s\n", gr)
 
 		origPath := strings.Split(os.Getenv("PATH"), ":")
-		origPath = slices.DeleteFunc(origPath, func(s string) bool {
-			return strings.Contains(s, root)
-		})
+		newPath := []string{}
+		for _, pth := range origPath {
+			if !strings.Contains(pth, root) {
+				newPath = append(newPath, pth)
+			}
+		}
+		origPath = newPath
 
 		fmt.Printf("PATH=%s:%s\n", filepath.Join(gr, "bin"), strings.Join(origPath, ":"))
 		os.Exit(0)
